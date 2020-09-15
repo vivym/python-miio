@@ -26,6 +26,7 @@ class MiIOProtocol:
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
+        port: int = 54321,
     ) -> None:
         """
         Create a :class:`Device` instance.
@@ -35,7 +36,7 @@ class MiIOProtocol:
         :param debug: Wanted debug level
         """
         self.ip = ip
-        self.port = 54321
+        self.port = port
         if token is None:
             token = 32 * "0"
         if token is not None:
@@ -61,7 +62,7 @@ class MiIOProtocol:
         :raises DeviceException: if the device could not be discovered after retries.
         """
         try:
-            m = MiIOProtocol.discover(self.ip)
+            m = MiIOProtocol.discover(self.ip, self.port)
         except DeviceException as ex:
             if retry_count > 0:
                 return self.send_handshake(retry_count=retry_count - 1)
@@ -89,7 +90,7 @@ class MiIOProtocol:
         return m
 
     @staticmethod
-    def discover(addr: str = None) -> Any:
+    def discover(addr: str = None, port: int = 54321) -> Any:
         """Scan for devices in the network.
         This method is used to discover supported devices by sending a
         handshake message to the broadcast address on port 54321.
@@ -113,7 +114,7 @@ class MiIOProtocol:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         s.settimeout(timeout)
         for _ in range(3):
-            s.sendto(helobytes, (addr, 54321))
+            s.sendto(helobytes, (addr, port))
         while True:
             try:
                 data, addr = s.recvfrom(1024)

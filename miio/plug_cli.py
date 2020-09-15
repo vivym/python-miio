@@ -15,10 +15,11 @@ pass_dev = click.make_pass_decorator(miio.ChuangmiPlug)
 
 @click.group(invoke_without_command=True, cls=ExceptionHandlerGroup)
 @click.option("--ip", envvar="DEVICE_IP", callback=validate_ip)
+@click.option("--port", envvar="DEVICE_PORT")
 @click.option("--token", envvar="DEVICE_TOKEN", callback=validate_token)
 @click.option("-d", "--debug", default=False, count=True)
 @click.pass_context
-def cli(ctx, ip: str, token: str, debug: int):
+def cli(ctx, ip: str, port: str, token: str, debug: int):
     """A tool to command Xiaomi Smart Plug."""
     if debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -34,7 +35,7 @@ def cli(ctx, ip: str, token: str, debug: int):
         click.echo("You have to give ip and token!")
         sys.exit(-1)
 
-    dev = miio.ChuangmiPlug(ip, token, debug)
+    dev = miio.ChuangmiPlug(ip, token, debug, port=int(port))
     _LOGGER.debug("Connecting to %s with token %s", ip, token)
 
     ctx.obj = dev

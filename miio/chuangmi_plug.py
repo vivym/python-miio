@@ -115,8 +115,9 @@ class ChuangmiPlug(Device):
         debug: int = 0,
         lazy_discover: bool = True,
         model: str = MODEL_CHUANGMI_PLUG_M1,
+        port: int = 54321,
     ) -> None:
-        super().__init__(ip, token, start_id, debug, lazy_discover)
+        super().__init__(ip, token, start_id, debug, lazy_discover, port)
 
         if model in AVAILABLE_PROPERTIES:
             self.model = model
